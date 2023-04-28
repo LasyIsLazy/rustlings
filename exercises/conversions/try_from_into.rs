@@ -23,8 +23,6 @@ enum IntoColorError {
     IntConversion,
 }
 
-// I AM NOT DONE
-
 // Your task is to complete this implementation
 // and return an Ok result of inner type Color.
 // You need to create an implementation for a tuple of three integers,
@@ -38,6 +36,23 @@ enum IntoColorError {
 impl TryFrom<(i16, i16, i16)> for Color {
     type Error = IntoColorError;
     fn try_from(tuple: (i16, i16, i16)) -> Result<Self, Self::Error> {
+        let (r, g, b) = tuple;
+        let red: u8 = if let Ok(red) = r.try_into() {
+            red
+        } else {
+            return Err(IntoColorError::IntConversion);
+        };
+        let green: u8 = if let Ok(green) = g.try_into() {
+            green
+        } else {
+            return Err(IntoColorError::IntConversion);
+        };
+        let blue: u8 = if let Ok(blue) = b.try_into() {
+            blue
+        } else {
+            return Err(IntoColorError::IntConversion);
+        };
+        Ok(Color { red, green, blue })
     }
 }
 
@@ -45,6 +60,19 @@ impl TryFrom<(i16, i16, i16)> for Color {
 impl TryFrom<[i16; 3]> for Color {
     type Error = IntoColorError;
     fn try_from(arr: [i16; 3]) -> Result<Self, Self::Error> {
+        // let result: [Option<u8>; 3] = arr.into_iter().map(|x| u8::try_from(x).ok()).collect();
+        let r = u8::try_from(arr[0]);
+        let g = u8::try_from(arr[1]);
+        let b = u8::try_from(arr[2]);
+        if r.is_ok() && g.is_ok() && b.is_ok() {
+            Ok(Color {
+                red: r.unwrap(),
+                green: g.unwrap(),
+                blue: b.unwrap(),
+            })
+        } else {
+            Err(IntoColorError::IntConversion)
+        }
     }
 }
 
@@ -52,6 +80,22 @@ impl TryFrom<[i16; 3]> for Color {
 impl TryFrom<&[i16]> for Color {
     type Error = IntoColorError;
     fn try_from(slice: &[i16]) -> Result<Self, Self::Error> {
+        if slice.len() != 3 {
+            return Err(IntoColorError::BadLen);
+        }
+
+        let r = u8::try_from(slice[0]);
+        let g = u8::try_from(slice[1]);
+        let b = u8::try_from(slice[2]);
+        if r.is_ok() && g.is_ok() && b.is_ok() {
+            Ok(Color {
+                red: r.unwrap(),
+                green: g.unwrap(),
+                blue: b.unwrap(),
+            })
+        } else {
+            Err(IntoColorError::IntConversion)
+        }
     }
 }
 
